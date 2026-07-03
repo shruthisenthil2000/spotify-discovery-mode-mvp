@@ -23,14 +23,14 @@ export default function HomePage() {
       <SectionTitle>Recently played</SectionTitle>
       <div className="flex gap-4 overflow-x-auto px-5 pb-6 no-scrollbar">
         {recentlyPlayed.map((track) => (
-          <TrackCard key={track.id} track={track} />
+          <TrackCard key={track.id} track={track} queue={recentlyPlayed} />
         ))}
       </div>
 
       <SectionTitle>Made for you</SectionTitle>
       <div className="flex gap-4 overflow-x-auto px-5 pb-6 no-scrollbar">
         {madeForYou.map((track) => (
-          <TrackCard key={track.id} track={track} size="lg" />
+          <TrackCard key={track.id} track={track} size="lg" queue={madeForYou} />
         ))}
       </div>
 
@@ -46,14 +46,14 @@ export default function HomePage() {
       <SectionTitle>Fresh discovery picks</SectionTitle>
       <div className="flex gap-4 overflow-x-auto px-5 pb-4 no-scrollbar">
         {discovery.map((track) => (
-          <TrackCard key={track.id} track={track} />
+          <TrackCard key={track.id} track={track} queue={discovery} />
         ))}
       </div>
 
       <SectionTitle>Popular right now</SectionTitle>
       <div className="pb-4">
         {demoTracks.slice(0, 8).map((track, i) => (
-          <TrackRow key={track.id} track={track} index={i} />
+          <TrackRow key={track.id} track={track} index={i} queue={demoTracks.slice(0, 8)} />
         ))}
       </div>
     </div>

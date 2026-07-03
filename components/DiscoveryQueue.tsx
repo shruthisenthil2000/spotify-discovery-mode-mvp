@@ -38,7 +38,7 @@ export function DiscoveryQueue() {
           >
             <button
               type="button"
-              onClick={() => playTrack(item.track)}
+              onClick={() => playTrack(item.track, discoveryQueue.map((q) => q.track))}
               className="flex w-full items-center gap-3 text-left"
             >
               <div

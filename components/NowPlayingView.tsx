@@ -6,7 +6,8 @@ import { DiscoveryModeCard } from "./DiscoveryModeCard";
 import { DiscoveryQueue } from "./DiscoveryQueue";
 
 export function NowPlayingView() {
-  const { currentTrack, isPlaying, togglePlay, progress, handleSave, feedback } = usePlayer();
+  const { currentTrack, isPlaying, togglePlay, progress, handleSave, feedback, queue, playNext, playPrev } =
+    usePlayer();
 
   if (!currentTrack) {
     return (
@@ -18,6 +19,7 @@ export function NowPlayingView() {
 
   const saved = feedback.savedTrackIds.includes(currentTrack.id);
   const progressPct = Math.round(progress * 100);
+  const hasQueue = queue.length > 1;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-spotify-elevated to-spotify-dark pb-10">
@@ -66,7 +68,13 @@ export function NowPlayingView() {
             <path d="M16 3h5v5M4 20L21 3M21 16v5h-5M15 15l6 6M4 4l5 5" />
           </svg>
         </button>
-        <button type="button" className="text-white" aria-label="Previous">
+        <button
+          type="button"
+          onClick={playPrev}
+          disabled={!hasQueue}
+          className="text-white disabled:text-spotify-muted disabled:opacity-40"
+          aria-label="Previous track"
+        >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
             <path d="M6 6h2v12H6V6zm3.5 6l8.5 6V6l-8.5 6z" />
           </svg>
@@ -88,7 +96,13 @@ export function NowPlayingView() {
             </svg>
           )}
         </button>
-        <button type="button" className="text-white" aria-label="Next">
+        <button
+          type="button"
+          onClick={playNext}
+          disabled={!hasQueue}
+          className="text-white disabled:text-spotify-muted disabled:opacity-40"
+          aria-label="Next track"
+        >
           <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
             <path d="M6 18l8.5-6L6 6v12zm10-12v12h2V6h-2z" />
           </svg>

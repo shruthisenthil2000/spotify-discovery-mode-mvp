@@ -27,14 +27,14 @@ export default function LibraryPage() {
       <SectionTitle>Recently added</SectionTitle>
       <div className="pb-4">
         {recentlyAdded.map((track, i) => (
-          <TrackRow key={track.id} track={track} index={i} />
+          <TrackRow key={track.id} track={track} index={i} queue={recentlyAdded} />
         ))}
       </div>
 
       <SectionTitle>Liked songs</SectionTitle>
       <div className="pb-4">
         {demoTracks.slice(0, 5).map((track, i) => (
-          <TrackRow key={track.id} track={track} index={i} />
+          <TrackRow key={track.id} track={track} index={i} queue={demoTracks.slice(0, 5)} />
         ))}
       </div>
     </div>

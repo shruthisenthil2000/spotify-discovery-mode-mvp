@@ -7,6 +7,7 @@ const tabs = [
   { href: "/", label: "Home", icon: HomeIcon },
   { href: "/search", label: "Search", icon: SearchIcon },
   { href: "/library", label: "Library", icon: LibraryIcon },
+  { href: "/discover", label: "Discover", icon: DiscoverIcon },
   { href: "/why-ai", label: "Why AI", icon: SparkIcon },
 ];
 
@@ -59,6 +60,15 @@ function LibraryIcon({ active }: { active: boolean }) {
     <svg width="24" height="24" viewBox="0 0 24 24" fill={active ? "currentColor" : "none"} stroke="currentColor" strokeWidth="2">
       <rect x="3" y="3" width="7" height="18" rx="1" />
       <rect x="14" y="3" width="7" height="18" rx="1" />
+    </svg>
+  );
+}
+
+function DiscoverIcon({ active }: { active: boolean }) {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? "2.5" : "2"}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M15 9l-2 6-6 2 2-6 6-2z" fill={active ? "currentColor" : "none"} />
     </svg>
   );
 }

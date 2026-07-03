@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
@@ -36,7 +37,12 @@ type PlayerContextValue = {
   freshnessLevel: FreshnessLevel;
   recommendation: DiscoveryRecommendation | null;
   discoveryQueue: QueuedRecommendation[];
-  playTrack: (track: Track) => void;
+  /** The playable queue the current track was opened with — used by
+   * playNext/playPrev. A single-track queue just replays from the start. */
+  queue: Track[];
+  playTrack: (track: Track, queue?: Track[]) => void;
+  playNext: () => void;
+  playPrev: () => void;
   togglePlay: () => void;
   setFreshnessLevel: (level: FreshnessLevel) => void;
   refreshRecommendation: () => void;
@@ -51,6 +57,7 @@ const PlayerContext = createContext<PlayerContextValue | null>(null);
 
 export function PlayerProvider({ children }: { children: ReactNode }) {
   const [currentTrack, setCurrentTrack] = useState<Track | null>(demoTracks[0]);
+  const [queue, setQueue] = useState<Track[]>(demoTracks[0] ? [demoTracks[0]] : []);
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0.35);
   const [feedback, setFeedback] = useState<UserFeedback>(createEmptyFeedback);
@@ -59,6 +66,17 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [discoveryQueue, setDiscoveryQueue] = useState<QueuedRecommendation[]>([]);
   const [toast, setToast] = useState<string | null>(null);
   const [excludeIds, setExcludeIds] = useState<string[]>([]);
+
+  const currentTrackRef = useRef<Track | null>(currentTrack);
+  const queueRef = useRef<Track[]>(queue);
+
+  useEffect(() => {
+    currentTrackRef.current = currentTrack;
+  }, [currentTrack]);
+
+  useEffect(() => {
+    queueRef.current = queue;
+  }, [queue]);
 
   useEffect(() => {
     setFeedback(loadFeedback());
@@ -149,14 +167,34 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     [currentTrack, feedback, excludeIds, generateRecommendation, addToQueue]
   );
 
-  const playTrack = useCallback((track: Track) => {
+  const playTrack = useCallback((track: Track, nextQueue?: Track[]) => {
     setCurrentTrack(track);
+    setQueue(nextQueue && nextQueue.length > 0 ? nextQueue : [track]);
     setIsPlaying(true);
     setProgress(0.1);
     setExcludeIds([]);
   }, []);
 
   const togglePlay = useCallback(() => setIsPlaying((p) => !p), []);
+
+  /** Steps through the queue the current track was opened with, wrapping
+   * around. A single-track queue (the common case) just replays from 0. */
+  const stepQueue = useCallback((direction: 1 | -1) => {
+    const prevTrack = currentTrackRef.current;
+    if (!prevTrack) return;
+    const q = queueRef.current;
+    if (q.length === 0) return;
+    const idx = q.findIndex((t) => t.id === prevTrack.id);
+    const nextIdx = idx === -1 ? 0 : (idx + direction + q.length) % q.length;
+    const next = q[nextIdx];
+    setCurrentTrack(next);
+    setIsPlaying(true);
+    setProgress(0.1);
+    setExcludeIds([]);
+  }, []);
+
+  const playNext = useCallback(() => stepQueue(1), [stepQueue]);
+  const playPrev = useCallback(() => stepQueue(-1), [stepQueue]);
 
   const updateQueueItem = useCallback(
     (trackId: string, updates: Partial<QueuedRecommendation>) => {
@@ -298,7 +336,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       freshnessLevel,
       recommendation,
       discoveryQueue,
+      queue,
       playTrack,
+      playNext,
+      playPrev,
       togglePlay,
       setFreshnessLevel,
       refreshRecommendation,
@@ -316,7 +357,10 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       freshnessLevel,
       recommendation,
       discoveryQueue,
+      queue,
       playTrack,
+      playNext,
+      playPrev,
       togglePlay,
       setFreshnessLevel,
       refreshRecommendation,

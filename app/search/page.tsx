@@ -103,7 +103,7 @@ export default function SearchPage() {
       </p>
       <div className="pb-4">
         {filtered.slice(0, 15).map((track, i) => (
-          <TrackRow key={track.id} track={track} index={i} />
+          <TrackRow key={track.id} track={track} index={i} queue={filtered.slice(0, 15)} />
         ))}
       </div>
     </div>
